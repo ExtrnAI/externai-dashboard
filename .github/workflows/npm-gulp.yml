@@ -11,35 +11,35 @@ jobs:
   deploy-github-pages:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     permissions:
       contents: read
       pages: write
       id-token: write
-    
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Check files
-      run: |
-        echo "✅ Checking dashboard files..."
-        test -f index.html && echo "✓ index.html exists"
-        test -f style.css && echo "✓ style.css exists"
-        test -f script.js && echo "✓ script.js exists"
-        echo "✅ All files present!"
-    
-    - name: Setup Pages
-      uses: actions/configure-pages@v3
-    
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: '.'
-    
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2
+      - uses: actions/checkout@v4
+
+      - name: Check files
+        run: |
+          echo "✅ Checking dashboard files..."
+          test -f index.html && echo "✓ index.html exists"
+          test -f style.css && echo "✓ style.css exists"
+          test -f script.js && echo "✓ script.js exists"
+          echo "✅ All files present!"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
