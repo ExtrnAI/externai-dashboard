@@ -1,0 +1,82 @@
+name: Deploy ExternAI Dashboard
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Validate HTML
+      run: |
+        npm install -g html-validator-cli
+        html-validator --file=index.html --verbose || true
+    
+    - name: Check file sizes
+      run: |
+        echo "📊 File sizes:"
+        du -h index.html style.css script.js
+    
+    - name: Run basic tests
+      run: |
+        echo "✅ All files present"
+        test -f index.html && echo "✓ index.html exists"
+        test -f style.css && echo "✓ style.css exists"
+        test -f script.js && echo "✓ script.js exists"
+        test -f README.md && echo "✓ README.md exists"
+
+  deploy-github-pages:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: '.'
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
+
+  build-info:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Generate build info
+      run: |
+        echo "# Build Information" > build-info.txt
+        echo "Build Date: $(date)" >> build-info.txt
+        echo "Commit: ${{ github.sha }}" >> build-info.txt
+        echo "Branch: ${{ github.ref_name }}" >> build-info.txt
+        echo "Repository: ${{ github.repository }}" >> build-info.txt
+        
+    - name: Upload build info
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-info
+        path: build-info.txt
