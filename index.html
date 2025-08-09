@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>ExternAI Dashboard — Control Center</title>
+  <meta name="description" content="ExternAI Dashboard - Monitor and control your AI agents in real-time" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg viewBox="0 0 100 100" fill="currentColor" width="60" height="60">
+          <path d="M20 20 L50 50 L20 80 M50 50 L80 20 M50 50 L80 80" 
+                stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="65" cy="35" r="6" fill="currentColor"/>
+        </svg>
+        <h1>ExternAI</h1>
+        <p class="login-subtitle">AI Control Center</p>
+      </div>
+      
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autocomplete="username">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember"> Remember me
+          </label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        
+        <div class="login-error hidden" id="loginError">
+          Invalid credentials. Please try again.
+        </div>
+      </form>
+      
+      <div class="login-footer">
+        <p class="text-muted">© 2025 ExternAI. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard (Hidden initially) -->
+  <div class="dashboard hidden" id="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">
+            <svg viewBox="0 0 100 100" fill="currentColor">
+              <path d="M20 20 L50 50 L20 80 M50 50 L80 20 M50 50 L80 80" 
+                    stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <circle cx="65" cy="35" r="6" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>ExternAI</span>
+        </div>
+        <button class="btn btn-sm" id="sidebarToggle" style="background:transparent;border:none;color:var(--bg)">
+          ☰
+        </button>
+      </div>
+      
+      <nav class="nav-menu">
+        <a href="#overview" class="nav-item active" data-page="overview">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Overview</span>
+        </a>
+        <a href="#agents" class="nav-item" data-page="agents">
+          <span class="nav-icon">🤖</span>
+          <span class="nav-text">AI Agents</span>
+        </a>
+        <a href="#indexes" class="nav-item" data-page="indexes">
+          <span class="nav-icon">📚</span>
+          <span class="nav-text">Indexes</span>
+        </a>
+        <a href="#analytics" class="nav-item" data-page="analytics">
+          <span class="nav-icon">📈</span>
+          <span class="nav-text">Analytics</span>
+        </a>
+        <a href="#logs" class="nav-item" data-page="logs">
+          <span class="nav-icon">📝</span>
+          <span class="nav-text">Logs</span>
+        </a>
+        <a href="#billing" class="nav-item" data-page="billing">
+          <span class="nav-icon">💳</span>
+          <span class="nav-text">Billing</span>
+        </a>
+        <a href="#settings" class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-text">Settings</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-logout" onclick="logout()">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-text">Logout</span>
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header-title" id="pageTitle">Dashboard Overview</h1>
+      <div class="header-actions">
+        <span class="status-indicator"></span>
+        <span class="text-muted">System Online</span>
+        <span class="current-time" id="currentTime"></span>
+        <div class="user-info">
+          <span id="userDisplay">Admin</span>
+          <div class="user-avatar">AD</div>
+        </div>
+        <button class="btn btn-sm" onclick="refreshData()">↻ Refresh</button>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main" id="mainContent">
+      <!-- Overview Page -->
+      <div id="overview-page" class="page-content">
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Active Agents</div>
+            <div class="metric-value" id="activeAgents">12</div>
+            <div class="metric-change positive">↑ 2 from yesterday</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Total Requests</div>
+            <div class="metric-value" id="totalRequests">48.2K</div>
+            <div class="metric-change positive">↑ 12.5%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Response Time</div>
+            <div class="metric-value" id="responseTime">124ms</div>
+            <div class="metric-change positive">↓ 8ms</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Success Rate</div>
+            <div class="metric-value" id="successRate">99.8%</div>
+            <div class="metric-change">→ stable</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Index Size</div>
+            <div class="metric-value" id="indexSize">2.4GB</div>
+            <div class="metric-change positive">↑ 124MB</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">API Usage</div>
+            <div class="metric-value" id="apiUsage">78%</div>
+            <div class="metric-change negative">↑ 5%</div>
+          </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="charts-container">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Request Volume (24h)</h3>
+              <select class="btn btn-sm" id="chartTimeRange">
+                <option value="24h">24 Hours</option>
+                <option value="7d">7 Days</option>
+                <option value="30d">30 Days</option>
+              </select>
+            </div>
+            <div class="chart-canvas">
+              <canvas id="volumeChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Agent Distribution</h3>
+            </div>
+            <div class="chart-canvas">
+              <canvas id="distributionChart" width="200" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Active Agents -->
+        <div class="agents-container">
+          <div class="section-header">
+            <h2 class="section-title">Active AI Agents</h2>
+            <button class="btn btn-sm" onclick="showModal('agent-details')">View All</button>
+          </div>
+          <div class="agents-grid" id="agentsGrid">
+            <!-- Agents will be inserted here -->
+          </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="section-header">
+          <h2 class="section-title">Recent Activity</h2>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Agent</th>
+              <th>Action</th>
+              <th>Status</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="activityTable">
+            <!-- Activity rows will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Agents Page -->
+      <div id="agents-page" class="page-content hidden">
+        <div class="section-header">
+          <h2 class="section-title">AI Agents Management</h2>
+          <button class="btn btn-success" onclick="showModal('new-agent')">+ New Agent</button>
+        </div>
+        <div class="agents-grid mt-1" id="allAgentsGrid"></div>
+      </div>
+      
+      <!-- Indexes Page -->
+      <div id="indexes-page" class="page-content hidden">
+        <div class="section-header">
+          <h2 class="section-title">Knowledge Indexes</h2>
+          <button class="btn btn-success" onclick="showModal('new-index')">+ New Index</button>
+        </div>
+        <table class="data-table mt-1">
+          <thead>
+            <tr>
+              <th>Index Name</th>
+              <th>Documents</th>
+              <th>Size</th>
+              <th>Last Updated</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="indexesTable"></tbody>
+        </table>
+      </div>
+      
+      <!-- Analytics Page -->
+      <div id="analytics-page" class="page-content hidden">
+        <h2>Advanced Analytics</h2>
+        <div class="metrics-grid mt-1" id="analyticsMetrics"></div>
+        <div class="chart-card mt-1">
+          <h3 class="chart-title">Performance Trends</h3>
+          <canvas id="performanceChart" width="800" height="300"></canvas>
+        </div>
+      </div>
+      
+      <!-- Logs Page -->
+      <div id="logs-page" class="page-content hidden">
+        <div class="section-header">
+          <h2 class="section-title">System Logs</h2>
+          <div style="display:flex;gap:10px">
+            <select class="btn btn-sm" id="logFilter">
+              <option value="all">All Logs</option>
+              <option value="info">Info</option>
+              <option value="warn">Warning</option>
+              <option value="error">Error</option>
+              <option value="success">Success</option>
+            </select>
+            <button class="btn btn-sm" onclick="clearLogs()">Clear</button>
+            <button class="btn btn-sm" onclick="exportLogs()">Export</button>
+          </div>
+        </div>
+        <div class="terminal mt-1" id="logsTerminal"></div>
+      </div>
+      
+      <!-- Billing Page -->
+      <div id="billing-page" class="page-content hidden">
+        <h2>Billing & Usage</h2>
+        <div class="billing-cards">
+          <div class="chart-card">
+            <h3>Current Plan: Professional</h3>
+            <p class="text-muted">$299/month • 5 AI Agents • 100,000 requests</p>
+            <div class="mt-1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span>Usage this month</span>
+                <span id="usageCount">78,234 / 100,000</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="usageBar" style="width:78%"></div>
+              </div>
+            </div>
+            <button class="btn btn-primary mt-1">Upgrade Plan</button>
+          </div>
+          
+          <div class="chart-card">
+            <h3>Billing History</h3>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Invoice</th>
+                </tr>
+              </thead>
+              <tbody id="billingHistory"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Settings Page -->
+      <div id="settings-page" class="page-content hidden">
+        <h2>Settings</h2>
+        <div class="settings-grid">
+          <div class="chart-card">
+            <h3>API Configuration</h3>
+            <div class="mt-1">
+              <label>API Key</label>
+              <div class="input-group">
+                <input type="password" id="apiKey" value="sk-...abc123" readonly>
+                <button class="btn btn-sm" onclick="toggleApiKey()">Show</button>
+              </div>
+            </div>
+            <div class="mt-1">
+              <label>Webhook URL</label>
+              <input type="text" value="https://your-domain.com/webhook">
+            </div>
+            <button class="btn btn-primary mt-1">Save Changes</button>
+          </div>
+          
+          <div class="chart-card">
+            <h3>Preferences</h3>
+            <div class="mt-1">
+              <label class="checkbox-label">
+                <input type="checkbox" checked> Enable notifications
+              </label>
+            </div>
+            <div class="mt-1">
+              <label class="checkbox-label">
+                <input type="checkbox" checked> Auto-refresh data
+              </label>
+            </div>
+            <div class="mt-1">
+              <label class="checkbox-label">
+                <input type="checkbox"> Dark mode
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Notifications Container -->
+  <div class="notifications" id="notifications"></div>
+  
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Details</h2>
+        <span class="modal-close" onclick="closeModal()">×</span>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Modal content will be inserted here -->
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
